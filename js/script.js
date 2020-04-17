@@ -46,12 +46,13 @@ for(let index=10; index<20; index+=1){
 ***/
 
 /**
- * @function showPage takes in a list of students and a page # and hides all students
- * except for that list
+ * @function showPage - takes in a list of students and a page # and hides 
+ *                      all students except for that page
  * 
  * @param {array} list - list of students
  * @param {integer} page - the page to display
- * @return {array} - return a list of the displayed students
+ * @return {array} - return a list of the displayed students. This should help 
+ *                   with the extra credit
  */
 function showPage(list, page){
    //start and end indexes of the page to be display
@@ -75,6 +76,39 @@ function showPage(list, page){
    return displayedList;
 }
 
+/**
+ * @function createPageLinks - Creates a <div> and appends an <li> with an embedded
+ *                             <a> for each display page. Then updates the DOM with 
+ *                             the new <div>
+ * 
+ * @param {array} list - list of students
+ */
+
+function createPageLinks(list){
+   //get a reference to the master html list
+   let ul = document.querySelector('ul')
+   //create the div to be added to the DOM.
+   let div = document.createElement('div')
+   div.className = 'pagination'
+   //determine how many total pages are necessary
+   let pageCount = Math.floor(list.length/showPerPage)+1
+   let newUl = document.createElement('ul')
+
+   //loop through the passed in list and create an <li. with an embedded <a>
+   //for each page
+   for(let i=0; i<pageCount; i+=1){
+      let a = document.createElement('a')
+      let li = document.createElement('li')
+      a.textContent = [i+1]
+      a.href = '#'
+      li.appendChild(a)
+      newUl.appendChild(li)
+   }
+   //ad the newly created <ul> to the newly created <div>
+   div.appendChild(newUl)
+   //add the newly created <div> to the DOM as a child of the main <div>
+   ul.parentNode.appendChild(div)
+}
 
 /*** 
    Create the `appendPageLinks function` to generate, append, and add 

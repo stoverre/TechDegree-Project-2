@@ -17,8 +17,18 @@ FSJS project 2 - List Filter and Pagination
    scoped to that function.
 ***/
 
+let studentList = document.querySelector('ul').children;
+let showPerPage = 10;
 
+let pg1Test = [];
+for(let index=0; index<10; index+=1){
+   pg1Test.push(studentList[index]);
+}
 
+let pg2Test = [];
+for(let index=10; index<20; index+=1){
+   pg2Test.push(studentList[index]);
+}
 
 /*** 
    Create the `showPage` function to hide all of the items in the 
@@ -35,7 +45,28 @@ FSJS project 2 - List Filter and Pagination
        "invoke" the function 
 ***/
 
-
+/**
+ * @function showPage takes in a list of students and a page # and hides all students
+ * except for that list
+ * 
+ * @param {array} list - list of students
+ * @param {integer} page - the page to display
+ * 
+ */
+function showPage(list, page){
+   let startIndex = (page*showPerPage)-showPerPage;
+   let endIndex = page*showPerPage
+   
+   //loop through the list of students. show students on the target
+   //page and hide all others. 
+   for(let i=0; i<studentList.length; i+=1){
+      if(i>=startIndex && i<endIndex){
+         studentList[i].style.display = '';
+      } else {
+         studentList[i].style.display = 'none';
+      }
+   }
+}
 
 
 /*** 

@@ -131,7 +131,7 @@ pagesDiv.addEventListener('click', (event) => {
       let pageNum = parseInt(event.target.textContent)
       //create an array of the page <li>s
       let pagesLi = pagesDiv.firstElementChild.children
-      //loop through all the <a>s 
+      //loop through all the <li>s 
       for(let i=0; i<pagesLi.length; i+=1){
          if(i===pageNum-1){
             //set the class = "active" for the clicked page <a>

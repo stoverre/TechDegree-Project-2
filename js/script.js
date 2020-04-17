@@ -113,11 +113,24 @@ function appendPageLinks(list){
    //add the newly created <div> to the DOM as a child of the main <div>
    ul.parentNode.appendChild(div)
 
-   //add a click event listener to each <a>
-   // ul.addEventListener('click', (event) => {
-   //    //if(event.target)
-   //    console.log(event.target)
-   // })
+   //add an event listener to the new <div>
+   div.lastElementChild.addEventListener('click', (event) => {
+   //make sure we clicked on a page <a>
+   if(event.target.tagName === 'A'){
+      let pageNum = parseInt(event.target.textContent)
+      //loop through all the page <li>s 
+      for(let i=0; i<newUl.children.length; i+=1){
+         if(i===pageNum-1){
+            //set the class = "active" for the clicked page <a>
+            newUl.children[i].firstElementChild.className = 'active';
+            showPage(studentList, pageNum)
+         }else{
+            //set the class = "" for all other page <a>
+            newUl.children[i].firstElementChild.className = '';
+         }
+      }
+   }
+})
 }
 
 /**
@@ -146,7 +159,19 @@ function searchBar(){
    //add the <div> to the header <div>
    headerDiv.appendChild(div)
    
-
+   //search bar functionality
+   /**
+    * if search bar button is clicked
+    *    store the input into a variable
+    * endif
+    * loop through all the students (not just the page)
+    *    if the name contains the input
+    *       display = ''
+    *    else
+    *       display = 'none'
+    *    endif
+    * endloop
+    */
 }
 
 
@@ -155,27 +180,27 @@ showPage(studentList, 1)
 searchBar()
 appendPageLinks(studentList)
 
-//add an event listener to the pages <div>
-let pagesDiv = document.querySelector('.pagination')
-pagesDiv.addEventListener('click', (event) => {
-   //make sure we clicked on a page <a>
-   if(event.target.tagName === 'A'){
-      let pageNum = parseInt(event.target.textContent)
-      //create an array of the page <li>s
-      let pagesLi = pagesDiv.firstElementChild.children
-      //loop through all the <li>s 
-      for(let i=0; i<pagesLi.length; i+=1){
-         if(i===pageNum-1){
-            //set the class = "active" for the clicked page <a>
-            pagesLi[i].firstElementChild.className = 'active';
-            showPage(studentList, pageNum)
-         }else{
-            //set the class = "" for all other page <a>
-            pagesLi[i].firstElementChild.className = '';
-         }
-      }
-   }
-})
+// //add an event listener to the pages <div>
+// let pagesDiv = document.querySelector('.pagination')
+// pagesDiv.addEventListener('click', (event) => {
+//    //make sure we clicked on a page <a>
+//    if(event.target.tagName === 'A'){
+//       let pageNum = parseInt(event.target.textContent)
+//       //create an array of the page <li>s
+//       let pagesLi = pagesDiv.firstElementChild.children
+//       //loop through all the <li>s 
+//       for(let i=0; i<pagesLi.length; i+=1){
+//          if(i===pageNum-1){
+//             //set the class = "active" for the clicked page <a>
+//             pagesLi[i].firstElementChild.className = 'active';
+//             showPage(studentList, pageNum)
+//          }else{
+//             //set the class = "" for all other page <a>
+//             pagesLi[i].firstElementChild.className = '';
+//          }
+//       }
+//    }
+// })
 
 
 

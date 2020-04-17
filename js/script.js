@@ -84,7 +84,7 @@ function showPage(list, page){
  * @param {array} list - list of students
  */
 
-function createPageLinks(list){
+function appendPageLinks(list){
    //get a reference to the master html list
    let ul = document.querySelector('ul')
    //create the div to be added to the DOM.
@@ -101,6 +101,10 @@ function createPageLinks(list){
       let li = document.createElement('li')
       a.textContent = [i+1]
       a.href = '#'
+      //set the first page as the active one
+      if(i===0){
+         a.className = 'active'
+      }
       li.appendChild(a)
       newUl.appendChild(li)
    }
@@ -108,7 +112,40 @@ function createPageLinks(list){
    div.appendChild(newUl)
    //add the newly created <div> to the DOM as a child of the main <div>
    ul.parentNode.appendChild(div)
+
+   //add a click event listener to each <a>
+   // ul.addEventListener('click', (event) => {
+   //    //if(event.target)
+   //    console.log(event.target)
+   // })
 }
+
+showPage(studentList, 1)
+appendPageLinks(studentList)
+
+//add an event listener to the pages <div>
+let pagesDiv = document.querySelector('.pagination')
+pagesDiv.addEventListener('click', (event) => {
+   //make sure we clicked on a page <a>
+   if(event.target.tagName === 'A'){
+      let pageNum = parseInt(event.target.textContent)
+      //create an array of the page <li>s
+      let pagesLi = pagesDiv.firstElementChild.children
+      //loop through all the <a>s 
+      for(let i=0; i<pagesLi.length; i+=1){
+         if(i===pageNum-1){
+            //set the class = "active" for the clicked page <a>
+            pagesLi[i].firstElementChild.className = 'active';
+            showPage(studentList, pageNum)
+         }else{
+            //set the class = "" for all other page <a>
+            pagesLi[i].firstElementChild.className = '';
+         }
+      }
+   }
+})
+
+
 
 /*** 
    Create the `appendPageLinks function` to generate, append, and add 

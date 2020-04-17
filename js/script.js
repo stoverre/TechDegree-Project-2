@@ -87,14 +87,14 @@ function showPage(list, page){
 function appendPageLinks(list){
    //get a reference to the master html list
    let ul = document.querySelector('ul')
-   //create the div to be added to the DOM.
+   //create the <div> to be added to the DOM.
    let div = document.createElement('div')
    div.className = 'pagination'
    //determine how many total pages are necessary
    let pageCount = Math.floor(list.length/showPerPage)+1
    let newUl = document.createElement('ul')
 
-   //loop through the passed in list and create an <li. with an embedded <a>
+   //loop through the passed in list and create an <li>. with an embedded <a>
    //for each page
    for(let i=0; i<pageCount; i+=1){
       let a = document.createElement('a')
@@ -120,7 +120,39 @@ function appendPageLinks(list){
    // })
 }
 
+/**
+ * @function searchBar - create a search bar 
+ * 
+ * @param {} none
+ * @return {} - none
+ */
+function searchBar(){
+   //get a reference to the master page header <div>
+   let headerDiv = document.querySelector('.page-header')
+   //create the new <div> to contain the <input> and <button>
+   let div = document.createElement('div')
+   div.className = 'student-search'
+   //create the input to be added to the <div>
+   let searchInput = document.createElement('input')
+   searchInput.placeholder = 'Search for students...'
+   
+   //create the search button
+   let searchButton = document.createElement('button')
+   searchButton.textContent = 'Search'
+
+   //add the <input> and <button> to the <div>
+   div.appendChild(searchInput)
+   div.appendChild(searchButton)
+   //add the <div> to the header <div>
+   headerDiv.appendChild(div)
+   
+
+}
+
+
+
 showPage(studentList, 1)
+searchBar()
 appendPageLinks(studentList)
 
 //add an event listener to the pages <div>

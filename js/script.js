@@ -27,17 +27,22 @@ function showPage(list, page){
    let endIndex = page*showPerPage;
    let displayedList = [];
    
-   //loop through the list of students. show students on the target
-   //page and hide all others. 
-   for(let i=0; i<studentList.length; i+=1){
-      if(i>=startIndex && i<endIndex){
-         studentList[i].style.display = '';
-         //add each displayed student to the list to be returned later
-         displayedList.push(studentList[i]);
-      } else {
-         studentList[i].style.display = 'none';
-      }
+   if(list.length<studentList.length){
+      for(let i=0; i<studentList.length; i+=1){
+         studentList[i].style.display = 'none'
+      }      
    }
+      //loop through the list of students. show students on the target
+      //page and hide all others. 
+      for(let i=0; i<list.length; i+=1){
+         if(i>=startIndex && i<endIndex){
+            list[i].style.display = '';
+            //add each displayed student to the list to be returned later
+            displayedList.push(list[i]);
+         } else {
+            list[i].style.display = 'none';
+         }
+      }
    return displayedList;
 }
 
@@ -73,10 +78,18 @@ function appendPageLinks(list){
       li.appendChild(a)
       newUl.appendChild(li)
    }
+   //check if there is already a <div> for page links and replace it
+   
    //ad the newly created <ul> to the newly created <div>
    div.appendChild(newUl)
    //add the newly created <div> to the DOM as a child of the main <div>
-   ul.parentNode.appendChild(div)
+   //or replace it if a page links <div> already exists
+   if(ul.parentNode.lastElementChild.className === 'pagination'){
+      ul.parentNode.replaceChild(div,ul.parentNode.lastElementChild)
+   }else{
+      ul.parentNode.appendChild(div)
+   }
+
 
    //add an event listener to the new <div>
    div.lastElementChild.addEventListener('click', (event) => {
@@ -88,7 +101,7 @@ function appendPageLinks(list){
          if(i===pageNum-1){
             //set the class = "active" for the clicked page <a>
             newUl.children[i].firstElementChild.className = 'active';
-            showPage(studentList, pageNum)
+            showPage(list, pageNum)
          }else{
             //set the class = "" for all other page <a>
             newUl.children[i].firstElementChild.className = '';
@@ -132,11 +145,25 @@ function searchBar(list){
     *    endif
     * endloop
     */
-   function doesItMatch(input, list){
-      console.log(event.target)
-      console.log(event.target.tagName)
-      console.log(searchInput.value)
-      console.log(list.length)
+   function doesNameMatch(input, list){
+      let searchResults = [];
+      //loop through all the students
+      for(let i=0; i<list.length; i+=1){
+         //pull the student name from the li element
+         let name = list[i].querySelector('h3').textContent
+         //if any part of the name includes the input text
+         if(name.includes(input)){
+            //show that student
+            list[i].style.display = '';
+            searchResults.push(list[i]);
+         }else{
+            //hide the rest
+            list[i].style.display = 'none';
+         }
+      }
+      console.log(searchResults)
+      showPage(searchResults, 1)
+      appendPageLinks(searchResults)
    }
 
    //add the <input> and <button> to the <div>
@@ -149,13 +176,13 @@ function searchBar(list){
    //then run the search
    div.addEventListener('click', (event) => {
       if(event.target.tagName === 'BUTTON'){
-         doesItMatch(searchInput.value, list)
+         doesNameMatch(searchInput.value, list)
       }
    })
    //listen for a keyboard key release
    //then run the search
    div.addEventListener('keyup', (event) => {
-      doesItMatch(searchInput.value, list)
+      doesNameMatch(searchInput.value, list)
    })
 }
 

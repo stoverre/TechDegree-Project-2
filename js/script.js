@@ -25,25 +25,25 @@ function showPage(list, page){
    //lengths, page sizes, and page to be displayed
    let startIndex = (page*showPerPage)-showPerPage;
    let endIndex = page*showPerPage;
-   let displayedList = [];
    
+   //if this is an appended list of the original list (ie: a searched list)
+   //hide the entire original list so the next loop can show only results of 
+   //the passed in list
    if(list.length<studentList.length){
       for(let i=0; i<studentList.length; i+=1){
          studentList[i].style.display = 'none'
       }      
    }
-      //loop through the list of students. show students on the target
-      //page and hide all others. 
-      for(let i=0; i<list.length; i+=1){
-         if(i>=startIndex && i<endIndex){
-            list[i].style.display = '';
-            //add each displayed student to the list to be returned later
-            displayedList.push(list[i]);
-         } else {
-            list[i].style.display = 'none';
-         }
+   //loop through the passed in list of students. show students on the target
+   //page and hide all others. 
+   for(let i=0; i<list.length; i+=1){
+      
+      if(i>=startIndex && i<endIndex){
+         list[i].style.display = '';
+      } else{
+         list[i].style.display = 'none';
       }
-   return displayedList;
+   }
 }
 
 /**
@@ -131,6 +131,8 @@ function searchBar(list){
    let searchButton = document.createElement('button')
    searchButton.textContent = 'Search'
 
+   let ul = document.querySelector('ul')
+
    //search bar functionality
    /**
     * if search bar button is clicked
@@ -145,25 +147,75 @@ function searchBar(list){
     *    endif
     * endloop
     */
-   function doesNameMatch(input, list){
+   function doesNameMatch(input){
       let searchResults = [];
+
       //loop through all the students
       for(let i=0; i<list.length; i+=1){
          //pull the student name from the li element
-         let name = list[i].querySelector('h3').textContent
+         let h3Name = list[i].querySelector('h3')
+         let name = h3Name.textContent
          //if any part of the name includes the input text
          if(name.includes(input)){
             //show that student
             list[i].style.display = '';
             searchResults.push(list[i]);
-         }else{
+         } else{
             //hide the rest
             list[i].style.display = 'none';
          }
       }
-      console.log(searchResults)
-      showPage(searchResults, 1)
-      appendPageLinks(searchResults)
+
+      function createErrorMessage(reason){
+         let li = document.createElement('li')
+         li.className = "student-item"
+         let div = document.createElement('div')
+         div.className = "student-details"
+         let h3 = document.createElement('h3')
+         h3.textContent = [reason]
+         
+         
+
+         div.appendChild(h3)
+         li.appendChild(div)
+         ul.appendChild(li)
+
+
+         return li
+      }
+
+      
+      function validInput(){
+         let isNotValid = false;
+         let invalidChars = [0,1,2,3,4,5,6,7,8,9,"/","*","-","+",".","?","<",">",
+                              "`","~","!","@","#","$","%","^","&",","," "]
+         for(let i=0; i<input.length; i+=1){
+            console.log(input.charAt(i))
+            for(let j=0; j<invalidChars.length; j+=1){
+               if(input.charAt(i) === invalidChars[j].toString()){
+                  isNotValid = true;
+               }
+            }
+         }
+         console.log(isNotValid)
+         return isNotValid   
+      }
+
+      //if the input is valid and/or there are no results from the search show a message
+      //otherwise run the display logic
+      if (validInput()){
+         searchResults.push(createErrorMessage('The Input May Only Contain Letters'))
+         showPage(searchResults, 1)
+         appendPageLinks(searchResults)
+      }else if(searchResults.length === 0){
+         searchResults.push(createErrorMessage('No Results Found'))
+         showPage(searchResults, 1)
+         appendPageLinks(searchResults)
+      }else {
+         showPage(searchResults, 1)
+         appendPageLinks(searchResults)
+      }
+      
    }
 
    //add the <input> and <button> to the <div>
@@ -176,13 +228,17 @@ function searchBar(list){
    //then run the search
    div.addEventListener('click', (event) => {
       if(event.target.tagName === 'BUTTON'){
-         doesNameMatch(searchInput.value, list)
+         doesNameMatch(searchInput.value)
       }
    })
    //listen for a keyboard key release
    //then run the search
    div.addEventListener('keyup', (event) => {
-      doesNameMatch(searchInput.value, list)
+      //if an error message exists as the last student, remove it from the DOM
+      if (ul.lastElementChild.querySelector('h3').textContent === "No Results Found"){
+         ul.removeChild(ul.lastElementChild)
+      }
+      doesNameMatch(searchInput.value)
    })
 }
 

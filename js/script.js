@@ -112,43 +112,74 @@ function appendPageLinks(list){
 }
 
 /**
- * @function searchBar - create a search bar 
- * 
- * @param {} none
+ * @function searchBar - 1. create a search bar and button. 
+ *                       2. check validity of the input validateInput()
+ *                       3. check if input matches anyone in the list doesNameMatch()
+ *                       4. create error or no result message createErrorMessage()
+ * @param {array} list - gets passed the studentList in to compare the searchBar
+ *                       logic against
  * @return {} - none
  */
 function searchBar(list){
-   //get a reference to the master page header <div>
+   //get a reference to the master page header <div> and assign the sibling ul
    let headerDiv = document.querySelector('.page-header')
+   let ul = headerDiv.nextElementSibling
+
    //create the new <div> to contain the <input> and <button>
    let div = document.createElement('div')
    div.className = 'student-search'
    //create the input to be added to the <div>
    let searchInput = document.createElement('input')
-   searchInput.placeholder = 'Search for students...'
-   
-   //create the search button
+   searchInput.placeholder = 'Search for students...'   
+   //create the search button to be added to the <div>
    let searchButton = document.createElement('button')
    searchButton.textContent = 'Search'
+   
+   //flag to keep track if an error message has been displayed
+   let messageAdded = false;
+   //initialize the searchResults array of <li>s
+   let searchResults = [];
 
-   let ul = document.querySelector('ul')
+    //nest the new button, input, and div into the header
+    div.appendChild(searchInput)
+    div.appendChild(searchButton)
+    headerDiv.appendChild(div)
 
-   //search bar functionality
    /**
-    * if search bar button is clicked
-    *    store the input into a variable
-    * endif
-    * loop through all the students (not just the page)
-    *    if the name contains the input
-    *       string.includes(searchValue, start), return boolean
-    *       display = ''
-    *    else
-    *       display = 'none'
-    *    endif
-    * endloop
+    * @function validateInput - determines if the search input contains any invalid 
+    *                           characters. If input is valid then check against
+    *                           the list
+    * @param {} - none //note: uses the parent doesNameMatch() list argument
+    * @return {boolean} isNotValid- returns true if the input contains an invalid 
+    *                     character as defined in invalidChar[]
+    */
+   function validateInput(input){
+      let inputIsValid = true;
+      let invalidChars = [0,1,2,3,4,5,6,7,8,9,"/","*","-","+",".","?","<",">",
+                           "`","~","!","@","#","$","%","^","&",","," "]
+      for(let i=0; i<input.length; i+=1){
+         for(let j=0; j<invalidChars.length; j+=1){
+            if(input.charAt(i) === invalidChars[j].toString()){
+               inputIsValid = false;
+            }
+         }
+      }
+      if (!inputIsValid){
+         searchResults.push(createErrorMessage('The Input May Only Contain Letters'))
+         showPage(searchResults, 1)
+         appendPageLinks(searchResults)
+      }else {
+         doesNameMatch(input)
+      }
+   }
+
+   /**
+    * @function doesNameMatch - compares a passed in string and compares it to the
+    *                           entire list of students.
+    * @param {string} input - a passed in string to search for
+    * @return {} - none
     */
    function doesNameMatch(input){
-      let searchResults = [];
 
       //loop through all the students
       for(let i=0; i<list.length; i+=1){
@@ -166,85 +197,61 @@ function searchBar(list){
          }
       }
 
-      function createErrorMessage(reason){
-         let li = document.createElement('li')
-         li.className = "student-item"
-         let div = document.createElement('div')
-         div.className = "student-details"
-         let h3 = document.createElement('h3')
-         h3.textContent = [reason]
-         
-         
-
-         div.appendChild(h3)
-         li.appendChild(div)
-         ul.appendChild(li)
-
-
-         return li
-      }
-
-      
-      function validInput(){
-         let isNotValid = false;
-         let invalidChars = [0,1,2,3,4,5,6,7,8,9,"/","*","-","+",".","?","<",">",
-                              "`","~","!","@","#","$","%","^","&",","," "]
-         for(let i=0; i<input.length; i+=1){
-            console.log(input.charAt(i))
-            for(let j=0; j<invalidChars.length; j+=1){
-               if(input.charAt(i) === invalidChars[j].toString()){
-                  isNotValid = true;
-               }
-            }
-         }
-         console.log(isNotValid)
-         return isNotValid   
-      }
-
-      //if the input is valid and/or there are no results from the search show a message
-      //otherwise run the display logic
-      if (validInput()){
-         searchResults.push(createErrorMessage('The Input May Only Contain Letters'))
-         showPage(searchResults, 1)
-         appendPageLinks(searchResults)
-      }else if(searchResults.length === 0){
+      //if the search finds no matches, create a no result message
+      if(searchResults.length === 0){
          searchResults.push(createErrorMessage('No Results Found'))
-         showPage(searchResults, 1)
-         appendPageLinks(searchResults)
-      }else {
-         showPage(searchResults, 1)
-         appendPageLinks(searchResults)
       }
-      
+
+      //update the page
+      showPage(searchResults, 1)
+      appendPageLinks(searchResults)
+
    }
 
-   //add the <input> and <button> to the <div>
-   div.appendChild(searchInput)
-   div.appendChild(searchButton)
-   //add the <div> to the header <div>
-   headerDiv.appendChild(div)
-   
-   //listen for a mouse click on the search <button>
-   //then run the search
+   /**
+    * @function createErrorMessage - creates a new <li> to add to the DOM. This <li>
+    *                                will display a message instead of a student and
+    *                                is of the same format as a student <li>
+    * @param {string} reason - gets passed a reason for the message to be created.
+    * @return {object} li - returns the newly created <li>
+    */
+   function createErrorMessage(reason){
+      //create the new parent <li>, child <div>, and <div> child <h3>
+      let li = document.createElement('li')
+      li.className = "student-item"
+      let div = document.createElement('div')
+      div.className = "student-details"
+      let h3 = document.createElement('h3')
+      h3.textContent = [reason]
+      
+      //nest the new <h3>, <div>, and <li
+      div.appendChild(h3)
+      li.appendChild(div)
+      ul.appendChild(li)
+      messageAdded = true;
+
+      return li
+   }
+   //listen for a mouse click on the search <button> then run the name search
    div.addEventListener('click', (event) => {
       if(event.target.tagName === 'BUTTON'){
          doesNameMatch(searchInput.value)
       }
    })
-   //listen for a keyboard key release
-   //then run the search
+
+   //listen for a keyboard key release then run the name search
    div.addEventListener('keyup', (event) => {
-      //if an error message exists as the last student, remove it from the DOM
-      if (ul.lastElementChild.querySelector('h3').textContent === "No Results Found"){
+      //if a no result or error message had been displayed (messageAdded)
+      //remove the last list item from the DOM
+      if (messageAdded){
          ul.removeChild(ul.lastElementChild)
+         messageAdded = false;
       }
-      doesNameMatch(searchInput.value)
+      searchResults = []
+      validateInput(searchInput.value)
    })
 }
 
 showPage(studentList, 1)
 searchBar(studentList)
 appendPageLinks(studentList)
-
-
-// Remember to delete the comments that came with this file, and replace them with your own code comments.

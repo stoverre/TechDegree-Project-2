@@ -247,7 +247,6 @@ function searchBar(list){
       li.appendChild(div)
       ul.appendChild(li)
       messageAdded = true;
-
       return li
    }
 
